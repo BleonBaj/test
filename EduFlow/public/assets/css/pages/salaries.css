@@ -1,0 +1,27 @@
+/* Salaries Page Specific Styles */
+
+/* Salary-specific styles are mostly in common.css */
+/* Add page-specific overrides here if needed */
+
+.salary-status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.salary-status-badge.paid {
+    background: rgba(22, 163, 74, 0.15);
+    color: var(--success);
+}
+
+.salary-status-badge.partial {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.salary-status-badge.due {
+    background: rgba(220, 38, 38, 0.15);
+    color: var(--danger);
+}

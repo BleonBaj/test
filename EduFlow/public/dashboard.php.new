@@ -1,0 +1,34 @@
+<?php
+require_once __DIR__ . '/../includes/auth.php';
+$admin = require_authenticated_admin_page();
+require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../partials/nav.php';
+
+// Get current page/section from URL or default to dashboard
+$page = $_GET['page'] ?? 'dashboard';
+$validPages = ['dashboard', 'reports', 'management', 'payments', 'salaries', 'settings'];
+if (!in_array($page, $validPages)) {
+    $page = 'dashboard';
+}
+?>
+<main class="app-root" id="dashboard" data-page="<?php echo htmlspecialchars($page); ?>">
+    <?php
+    // Load the requested page
+    $pageFile = __DIR__ . '/pages/' . $page . '/index.php';
+    if (file_exists($pageFile)) {
+        require $pageFile;
+    } else {
+        require __DIR__ . '/pages/dashboard/index.php';
+    }
+    ?>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <?php if ($page === 'reports'): ?>
+        <script src="assets/js/reports.js"></script>
+    <?php endif; ?>
+</main>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
+
+<!-- Modals - Shared across all pages -->
+<?php require_once __DIR__ . '/partials/modals.php'; ?>

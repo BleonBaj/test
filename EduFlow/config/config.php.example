@@ -1,0 +1,45 @@
+<?php
+// Ky është një shembull i konfigurimit
+// Kopjo këtë fajll në config.php dhe plotëso vlerat
+
+return [
+    'db' => [
+        'host' => '127.0.0.1',        // Adresa e MySQL serverit
+        'port' => 3306,               // Porti i MySQL (zakonisht 3306)
+        'name' => 'bts_ms',           // Emri i databazës
+        'user' => 'root',             // Përdoruesi i MySQL
+        'pass' => '',                 // Fjalëkalimi i MySQL
+        'charset' => 'utf8mb4',       // Encoding (mos e ndrysho)
+    ],
+    'security' => [
+        'management_pin_attempts' => 3,        // Sa tentativa për PIN para se të bllokohet
+        'management_auth_method' => 'pin',     // 'pin' ose 'login_password'
+        'settings_unlock_ttl_minutes' => 15,  // Sa minuta mbeten cilësimet të hapura pas PIN
+        'account_lock_enabled' => false,       // Aktivizo bllokimin e llogarisë në prodhim
+        'account_lock_attempts' => 5,          // Sa tentativa gabim para bllokimit
+        'account_lock_minutes' => 30,          // Sa minuta bllokohet llogaria
+        'rate_limit_enabled' => false,         // Aktivizo rate limiting në prodhim
+        'rate_limit_window_seconds' => 900,   // 15 minuta
+        'rate_limit_max_attempts' => 5,       // Sa tentativa lejohen
+    ],
+    'app' => [
+        'default_language' => 'sq',           // Gjuha e paracaktuar
+        'supported_languages' => ['sq', 'en'], // Gjuhët e mbështetura
+        'name' => 'BTS Menaxhimi i Kursit Fizik', // Emri i aplikacionit
+        'admin_email' => 'admin@example.com', // Email i administratorit
+    ],
+    'email' => [
+        // SMTP Configuration
+        'smtp_enabled' => true,               // Aktivizo SMTP
+        'smtp_host' => 'smtp.gmail.com',      // Server SMTP
+        'smtp_port' => 587,                   // Porti (587 për TLS, 465 për SSL)
+        'smtp_encryption' => 'tls',           // 'tls' ose 'ssl'
+        'smtp_username' => 'your-email@gmail.com', // Email për SMTP
+        'smtp_password' => '',                // VENDOS NË ENVIRONMENT VARIABLES (SMTP_PASSWORD)
+        'from_email' => '',                   // Email dërguesi (bosh = smtp_username)
+        'from_name' => 'BTS Management System', // Emri dërguesi
+        'reply_to' => '',                     // Email për përgjigje (bosh = from_email)
+    ],
+];
+
+

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fletë Page</title>
+    <link rel="stylesheet" href="assets/css/invoice.css">
+  </head>
+  <body>
+    <div class="invoice" id="salary-root">
+      <header class="invoice-header">
+        <div class="biz">
+          <img id="biz-logo" alt="Logo" />
+          <div>
+            <h1 id="biz-name">Emri i kompanisë</h1>
+          </div>
+        </div>
+        <div class="meta">
+          <div><strong>Fletë Page</strong> <span id="sal-number">—</span></div>
+          <div><strong>Data:</strong> <span id="sal-date"></span></div>
+        </div>
+      </header>
+      <section class="parties">
+        <div class="party">
+          <h3>Biznesi</h3>
+          <table class="kv-table" id="biz-table">
+            <tbody>
+              <tr><th>Emri</th><td id="biz-name-row">—</td></tr>
+              <tr><th>Adresa</th><td id="biz-address">—</td></tr>
+              <tr><th>Telefoni</th><td id="biz-phone">—</td></tr>
+              <tr><th>Nr:TVSH</th><td id="biz-taxid">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="party">
+          <h3>Profesori</h3>
+          <table class="kv-table" id="prof-table">
+            <tbody>
+              <tr><th>Emri i profesorit</th><td id="prof-name">—</td></tr>
+              <tr><th>ID profesori</th><td id="prof-id">—</td></tr>
+              <tr><th>Klasa</th><td id="prof-class">—</td></tr>
+              <tr class="opt"><th>Telefoni</th><td id="prof-phone">—</td></tr>
+              <tr class="opt"><th>Email</th><td id="prof-email">—</td></tr>
+              <tr class="opt"><th>Adresa</th><td id="prof-address">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="invoice-body">
+        <table class="lines" id="sal-lines">
+          <thead>
+            <tr>
+              <th>Muaji</th>
+              <th class="right">Baza</th>
+              <th class="right">Avancat</th>
+              <th class="right">Paguar</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td class="right" colspan="3">Totali i paguar</td>
+              <td class="right" id="sal-total-paid">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+      <footer class="invoice-footer">
+        <button onclick="window.print()">Printo</button>
+      </footer>
+    </div>
+    <script>
+      (function(){
+        const qs = new URLSearchParams(window.location.search);
+        let data = null;
+        const key = qs.get('key');
+        if (key) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) { data = JSON.parse(raw); try { localStorage.removeItem(key); } catch(_) {} }
+          } catch(_) {}
+        }
+        if (!data) {
+          const payload = qs.get('data');
+          if (payload) { try { data = JSON.parse(decodeURIComponent(payload)); } catch(_) {} }
+        }
+        if (!data) data = {};
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
+        const img = document.getElementById('biz-logo'); if (img && data.company_logo_url) { img.src = data.company_logo_url; img.style.display = 'block'; } else if (img) { img.style.display = 'none'; }
+        set('biz-name', data.company_name);
+        set('biz-name-row', data.company_name);
+        set('biz-address', data.company_address);
+        set('biz-phone', data.company_phone);
+        set('biz-taxid', data.company_tax_id);
+        set('sal-number', data.number || '');
+        set('sal-date', data.date || new Date().toLocaleDateString());
+        // Professor section
+        set('prof-name', data.professor_name || '');
+        set('prof-id', data.professor_id || '');
+        set('prof-class', data.class || '');
+        set('prof-phone', data.professor_phone || '');
+        set('prof-email', data.professor_email || '');
+        set('prof-address', data.professor_address || '');
+        ['prof-phone','prof-email','prof-address'].forEach((id) => {
+          const cell = document.getElementById(id);
+          if (cell && (!cell.textContent || cell.textContent.trim() === '')) {
+            const tr = cell.closest('tr'); if (tr) tr.style.display = 'none';
+          }
+        });
+        // Lines
+        const tbody = document.querySelector('#sal-lines tbody');
+        const rows = (data.lines || []).map(l => `<tr><td>${l.month}</td><td class="right">${l.base}</td><td class="right">${l.advances}</td><td class=\"right\">${l.paid}</td></tr>`).join('');
+        tbody.innerHTML = rows;
+        // Calculate total paid from lines if not provided (paid_amount + advances)
+        let totalPaid = data.total_paid;
+        if (!totalPaid && data.lines && data.lines.length > 0) {
+          const total = data.lines.reduce((sum, line) => {
+            // Extract numeric value from formatted strings like "€200.00 (EUR)"
+            const paidMatch = line.paid?.match(/[\d,]+\.?\d*/);
+            const advancesMatch = line.advances?.match(/[\d,]+\.?\d*/);
+            const paid = paidMatch ? parseFloat(paidMatch[0].replace(/,/g, '')) : 0;
+            const advances = advancesMatch ? parseFloat(advancesMatch[0].replace(/,/g, '')) : 0;
+            return sum + paid + advances;
+          }, 0);
+          const currency = data.lines[0]?.paid?.match(/\(([^)]+)\)/)?.[1] || 'EUR';
+          totalPaid = total.toFixed(2) + ` (${currency})`;
+        }
+        set('sal-total-paid', totalPaid || '0.00');
+      })();
+    </script>
+  </body>
+</html>

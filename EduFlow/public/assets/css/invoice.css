@@ -1,0 +1,217 @@
+/* ==========================
+   INVOICE STYLING - PROFESSIONAL
+   ========================== */
+
+:root {
+  --primary: #4b0000;
+  --text: #222;
+  --muted: #555;
+  --border: #ddd;
+  --bg: #fff;
+  --font: 'Segoe UI', Tahoma, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  /* Fallback when CSS variables are unsupported */
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  /* Preferred custom font via CSS variable */
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.invoice {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* HEADER */
+.invoice-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.invoice-header .biz {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.invoice-header .biz img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.invoice-header .biz h1 {
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin: 0;
+}
+
+.invoice-header .biz div {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.invoice-header .meta {
+  text-align: right;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.invoice-header .meta strong {
+  color: var(--primary);
+}
+
+/* PARTIES (Business and Client tables) */
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem 0;
+}
+.party h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary);
+}
+.kv-table {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-collapse: collapse;
+}
+.kv-table th, .kv-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.kv-table th {
+  width: 36%;
+  text-align: left;
+  background: #fafafa;
+  color: var(--muted);
+}
+.kv-table tr:last-child th, .kv-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* BODY */
+.invoice-body {
+  width: 100%;
+}
+
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.lines th, .lines td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.lines th {
+  background: var(--primary);
+  color: #fff;
+  text-align: left;
+  font-weight: 600;
+}
+
+.lines td.right, .lines th.right {
+  text-align: right;
+}
+
+.lines tbody tr:hover {
+  background: #f8f8f8;
+}
+
+tfoot td {
+  font-weight: bold;
+  border-top: 2px solid var(--primary);
+}
+
+/* TOTALS */
+.totals {
+  max-width: 300px;
+  margin-left: auto;
+  font-size: 0.95rem;
+}
+
+.totals .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+
+.totals .total {
+  border-top: 2px solid var(--primary);
+  font-weight: bold;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  color: var(--primary);
+}
+
+/* FOOTER */
+.invoice-footer {
+  text-align: right;
+  margin-top: 2rem;
+}
+
+.invoice-footer button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.invoice-footer button:hover {
+  background: #650000;
+}
+
+/* PRINT MODE */
+@media print {
+  @page { margin: 12mm; }
+  body {
+    background: #fff;
+  }
+  .invoice {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  .invoice-footer {
+    display: none;
+  }
+}
+@page {
+  margin: 20mm;
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+  @top-left { content: none; }
+  @top-right { content: none; }
+}

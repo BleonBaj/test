@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Faturë</title>
+    <link rel="stylesheet" href="assets/css/invoice.css">
+  </head>
+  <body>
+    <div class="invoice" id="invoice-root">
+      <header class="invoice-header">
+        <div class="biz">
+          <img id="biz-logo" alt="Logo" />
+          <div>
+            <h1 id="biz-name">Emri i kompanisë</h1>
+          </div>
+        </div>
+        <div class="meta">
+          <div><strong>Faturë</strong> <span id="inv-number">—</span></div>
+          <div><strong>Data:</strong> <span id="inv-date"></span></div>
+        </div>
+      </header>
+      <section class="parties">
+        <div class="party">
+          <h3>Biznesi</h3>
+          <table class="kv-table" id="biz-table">
+            <tbody>
+              <tr><th>Emri</th><td id="biz-name-row">—</td></tr>
+              <tr><th>Adresa</th><td id="biz-address">—</td></tr>
+              <tr><th>Telefoni</th><td id="biz-phone">—</td></tr>
+              <tr><th>Nr:TVSH</th><td id="biz-taxid">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="party">
+          <h3>Klienti</h3>
+          <table class="kv-table" id="client-table">
+            <tbody>
+              <tr><th>Emri i studentit</th><td id="client-name">—</td></tr>
+              <tr><th>ID studenti</th><td id="client-id">—</td></tr>
+              <tr><th>Klasa</th><td id="client-class">—</td></tr>
+              <tr class="opt"><th>Telefoni</th><td id="client-phone">—</td></tr>
+              <tr class="opt"><th>Email</th><td id="client-email">—</td></tr>
+              <tr class="opt"><th>Adresa</th><td id="client-address">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="invoice-body">
+        <table class="lines" id="inv-lines">
+          <thead>
+            <tr>
+              <th>Muaji</th>
+              <th class="right">Shuma</th>
+              <th class="right">Paguar</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td class="right" colspan="2">Totali</td>
+              <td class="right" id="inv-total-paid">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="totals" id="inv-tax">
+          <div class="row"><span>Totali pa TVSH</span><span id="inv-net">0.00</span></div>
+          <div class="row"><span id="inv-vat-label">TVSH</span><span id="inv-vat">0.00</span></div>
+          <div class="row total"><span>Totali me TVSH</span><span id="inv-gross">0.00</span></div>
+        </div>
+      </section>
+      <footer class="invoice-footer">
+        <button onclick="window.print()">Printo</button>
+      </footer>
+    </div>
+    <script>
+      // Bootstrapper: prefer payload via localStorage key to avoid URL length/encoding issues; fallback to data query param
+      (function(){
+        const qs = new URLSearchParams(window.location.search);
+        let data = null;
+        const key = qs.get('key');
+        if (key) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              data = JSON.parse(raw);
+              // optional cleanup
+              try { localStorage.removeItem(key); } catch(_) {}
+            }
+          } catch(_) {}
+        }
+        if (!data) {
+          const payload = qs.get('data');
+          if (payload) {
+            try { data = JSON.parse(decodeURIComponent(payload)); } catch(_) {}
+          }
+        }
+        if (!data) data = {};
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
+        const setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html || ''; };
+        const img = document.getElementById('biz-logo'); if (img && data.company_logo_url) { img.src = data.company_logo_url; img.style.display = 'block'; } else if (img) { img.style.display = 'none'; }
+        set('biz-name', data.company_name);
+        set('biz-name-row', data.company_name);
+        set('biz-address', data.company_address);
+        set('biz-phone', data.company_phone);
+        set('biz-email', data.company_email);
+        set('biz-taxid', data.company_tax_id);
+        set('inv-number', data.number || '');
+        set('inv-date', data.date || new Date().toLocaleDateString());
+  // Client table
+  set('client-name', data.client_name || '');
+        set('client-id', data.client_id || '');
+        set('client-class', data.class || '');
+        set('client-phone', data.client_phone || '');
+        set('client-email', data.client_email || '');
+        set('client-address', data.client_address || '');
+        // Hide optional rows if empty
+        ['client-phone','client-email','client-address'].forEach((id) => {
+          const cell = document.getElementById(id);
+          if (cell && (!cell.textContent || cell.textContent.trim() === '')) {
+            const tr = cell.closest('tr'); if (tr) tr.style.display = 'none';
+          }
+        });
+        // Lines
+        const tbody = document.querySelector('#inv-lines tbody');
+        const rows = (data.lines || []).map(l => `<tr><td>${l.month}</td><td class="right">${l.amount}</td><td class="right">${l.paid}</td></tr>`).join('');
+        tbody.innerHTML = rows;
+        set('inv-total-paid', data.total_paid || '0.00');
+        // Tax
+        set('inv-net', data.net || '0.00');
+        set('inv-vat', data.vat || '0.00');
+        setHtml('inv-vat-label', data.vat_label || 'TVSH');
+        set('inv-gross', data.gross || '0.00');
+      })();
+    </script>
+  </body>
+</html>
